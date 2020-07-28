@@ -1,0 +1,6 @@
+.colored_element{
+    height: 100px;
+    width: 100px;
+    background-color: #00ffff;
+    border: 5px solid black;
+}
