@@ -29,7 +29,22 @@ jobs:
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist --no-progress --no-suggest
-
+    
+    - name: install buildkite deps
+      run: sudo sh -c 'echo deb https://apt.buildkite.com/buildkite-agent stable main > /etc/apt/sources.list.d/buildkite-agent.list' && sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 32A37959C2FA5C3C99EFBC32A79206696452D198
+    
+    - name: Install Buildkite agent
+      run: sudo apt-get update && sudo apt-get install -y buildkite-agent
+    
+    - name: configure Buildkite agent token
+      run: sudo sed -i "s/xxx/0909c2fb155d507694e574aa81bd00e59bab2655a94cc7dda0/g" /etc/buildkite-agent/buildkite-agent.cfg
+      
+    - name: Start Buildkite Agent
+      run: sudo systemctl enable buildkite-agent && sudo systemctl start buildkite-agent
+    
+    - name: store last deployment logs
+      run: touch build.log && journalctl -f -u buildkite-agent > ./build.log
+    
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
 
